@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/book")
-public class HelloController {
+public class BookController {
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
