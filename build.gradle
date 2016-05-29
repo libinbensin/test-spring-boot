@@ -44,6 +44,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
+//apply plugin: 'war'
 
 jar {
     baseName = 'gs-spring-boot'
@@ -56,6 +57,10 @@ repositories {
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+//configurations {
+//    providedRuntime
+//}
 
 dependencies {
     // tag::jetty[]
@@ -71,9 +76,19 @@ dependencies {
     // end::actuator[]
     compile("mysql:mysql-connector-java:5.1.28")
 
+//    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
     testCompile("junit:junit")
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
+}
+
+task stage {
+  dependsOn build
+}
+
+springBoot {
+    executable = true
 }

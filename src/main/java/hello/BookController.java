@@ -4,24 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 @RestController
-@RequestMapping("/book")
+@RequestMapping("/books")
 public class BookController {
-    private static final String template = "Hello, %s!";
-    private final AtomicLong counter = new AtomicLong();
 
     @Autowired
     private BookRepository bookRepository;
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}" ,
+            method = RequestMethod.POST)
     @ResponseBody
-    public String add(String name , String author , String description) {
+    public String add(@RequestBody Book bookRequest) {
         Book book = null;
 
         try {
-            book = new Book(name , author , description);
+            book = new Book(bookRequest.getName() , bookRequest.getAuthor() , bookRequest.getDescription());
             bookRepository.save(book);
         }catch (Exception e) {
             return "Error adding the book";
@@ -43,18 +40,19 @@ public class BookController {
         return bookRepository.findAll();
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public String update(long id , String name , String author , String description) {
-        Book book = null;
+    @RequestMapping(value = "/{id}" ,
+            method = RequestMethod.PUT)
+    public String update(@PathVariable("id") long id , @RequestBody Book bookRequest) {
+        Book book;
 
         try {
             book = bookRepository.findOne(id);
             if(book == null) {
-                book = new Book(name, author, description);
+                book = bookRequest;
             }else {
-                book.setName(name);
-                book.setAuthor(author);
-                book.setDescription(description);
+                book.setName(bookRequest.getName());
+                book.setAuthor(bookRequest.getAuthor());
+                book.setDescription(bookRequest.getDescription());
             }
             bookRepository.save(book);
         }catch (Exception e) {
@@ -63,9 +61,10 @@ public class BookController {
         return "Book updated successfully";
     }
 
-    @RequestMapping(method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}" ,
+            method = RequestMethod.DELETE)
     @ResponseBody
-    public String delete(long id){
+    public String delete(@PathVariable("id") long id){
         try {
             Book book = bookRepository.findOne(id);
             if(book != null) {
